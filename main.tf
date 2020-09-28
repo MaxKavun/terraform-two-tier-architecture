@@ -22,6 +22,14 @@ resource "aws_instance" "example" {
   instance_type = "t3.micro"
   subnet_id     = "subnet-0a57e2bff9477c93b"
   key_name      = var.aws_key
+  user_data     = <<-EOF
+                  #!/bin/bash
+                  yum update -y 
+                  yum install -y httpd.x86_64
+                  systemctl start httpd
+                  systemctl enable httpd
+                  echo "Hello from <h1>$(hostname)</h1>" > /var/www/html/index.html
+                EOF
 }
 
 resource "aws_eip" "lb" {
