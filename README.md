@@ -1,2 +1,3 @@
 # Terraform two-tier architecture
-[Alt text](sources/two-tier-architecture.jpg?raw=true "Title")
+![Screenshot](sources/two-tier-architecture.jpg)
+> In Progress
