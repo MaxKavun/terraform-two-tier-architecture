@@ -17,6 +17,10 @@ provider "aws" {
   profile = "aws-admin"
 }
 
+module "network" {
+  source = "./network"
+}
+
 resource "aws_launch_template" "web_tier" {
   name = "web_tier"
   block_device_mappings {
@@ -29,19 +33,19 @@ resource "aws_launch_template" "web_tier" {
   instance_type          = "t3.micro"
   key_name               = var.aws_key
   user_data              = filebase64("${path.module}/provisions/web-tier.sh")
-  vpc_security_group_ids = ["sg-0511b6cd4cbac6f1b"]
+  vpc_security_group_ids = [module.network.web_tier_sg]
 }
 
 resource "aws_lb_target_group" "web_app_tg" {
   name     = "web-app-target-group"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = "vpc-f4a6709d"
+  vpc_id   = module.network.main_vpc
 }
 
 
 resource "aws_autoscaling_group" "web_tier_asg" {
-  vpc_zone_identifier = ["subnet-0a57e2bff9477c93b", "subnet-055c19e4320fc381a"]
+  vpc_zone_identifier = [module.network.subnet_a, module.network.subnet_b]
   desired_capacity    = 2
   max_size            = 5
   min_size            = 2
@@ -56,8 +60,8 @@ resource "aws_autoscaling_group" "web_tier_asg" {
 resource "aws_lb" "web_tier_alb" {
   name               = "web-tier-alb"
   load_balancer_type = "application"
-  security_groups    = ["sg-06ac2887a9ca7394d"]
-  subnets            = ["subnet-0a57e2bff9477c93b", "subnet-055c19e4320fc381a"]
+  security_groups    = [module.network.alb_sg]
+  subnets            = [module.network.subnet_a, module.network.subnet_b]
 }
 
 resource "aws_lb_listener" "web_app_front_end" {
