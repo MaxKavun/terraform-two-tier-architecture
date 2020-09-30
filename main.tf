@@ -21,6 +21,21 @@ module "network" {
   source = "./network"
 }
 
+data "aws_ami" "amz_linux2" {
+  owners      = ["amazon"]
+  most_recent = true
+  filter {
+    name   = "owner-alias"
+    values = ["amazon"]
+  }
+
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm*"]
+  }
+}
+
 resource "aws_launch_template" "web_tier" {
   name = "web_tier"
   block_device_mappings {
@@ -29,7 +44,7 @@ resource "aws_launch_template" "web_tier" {
       volume_size = 20
     }
   }
-  image_id               = var.amis[var.region]
+  image_id               = data.aws_ami.amz_linux2.id
   instance_type          = "t3.micro"
   key_name               = var.aws_key
   user_data              = filebase64("${path.module}/provisions/web-tier.sh")
