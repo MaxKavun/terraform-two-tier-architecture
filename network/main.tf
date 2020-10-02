@@ -9,7 +9,7 @@ terraform {
 }
 
 resource "aws_vpc" "main" {
-  cidr_block = "10.100.0.0/16"
+  cidr_block = var.vpc_cidr
 }
 
 resource "aws_internet_gateway" "gw" {
@@ -18,7 +18,7 @@ resource "aws_internet_gateway" "gw" {
 
 resource "aws_subnet" "public_a" {
   vpc_id = aws_vpc.main.id
-  cidr_block = "10.100.10.0/24"
+  cidr_block = var.public_subnet_cidr_a
   map_public_ip_on_launch = true
 }
 
@@ -38,7 +38,7 @@ resource "aws_route_table_association" "public_a" {
 
 resource "aws_subnet" "public_b" {
   vpc_id = aws_vpc.main.id
-  cidr_block = "10.100.20.0/24"
+  cidr_block = var.public_subnet_cidr_b
   map_public_ip_on_launch = true
 }
 

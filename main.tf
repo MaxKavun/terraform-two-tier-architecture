@@ -18,7 +18,10 @@ provider "aws" {
 }
 
 module "network" {
-  source = "./network"
+  source               = "./network"
+  vpc_cidr             = var.vpc_cidr
+  public_subnet_cidr_a = var.public_subnet_cidr_a
+  public_subnet_cidr_b = var.public_subnet_cidr_b
 }
 
 data "aws_ami" "amz_linux2" {
@@ -36,6 +39,14 @@ data "aws_ami" "amz_linux2" {
   }
 }
 
+data "aws_ec2_instance_type_offering" "web_instance_type" {
+  filter {
+    name   = "instance-type"
+    values = ["t3.micro", "t2.micro"]
+  }
+  preferred_instance_types = ["t3.micro", "t2.micro"]
+}
+
 resource "aws_launch_template" "web_tier" {
   name = "web_tier"
   block_device_mappings {
@@ -45,7 +56,7 @@ resource "aws_launch_template" "web_tier" {
     }
   }
   image_id               = data.aws_ami.amz_linux2.id
-  instance_type          = "t3.micro"
+  instance_type          = data.aws_ec2_instance_type_offering.web_instance_type.instance_type
   key_name               = var.aws_key
   user_data              = filebase64("${path.module}/provisions/web-tier.sh")
   vpc_security_group_ids = [module.network.web_tier_sg]
