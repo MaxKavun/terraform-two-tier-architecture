@@ -2,13 +2,13 @@ variable "region" {
   description = "Region where spin up environment"
 }
 
-variable "aws_key" {
-  description = "Desired key which you want to use for access"
+variable "alt_region" {
+  description = "Alternative region where spin up environment"
 }
 
-variable "amis" {
-  type        = map
-  description = "Map with AMIs which exist in region"
+
+variable "aws_key" {
+  description = "Desired key which you want to use for access"
 }
 
 variable "vpc_cidr" {

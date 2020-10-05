@@ -17,6 +17,13 @@ provider "aws" {
   profile = "aws-admin"
 }
 
+provider "aws" {
+  alias   = "nyc"
+  region  = var.alt_region
+  profile = "aws-admin"
+}
+
+
 module "network" {
   source               = "./network"
   vpc_cidr             = var.vpc_cidr
