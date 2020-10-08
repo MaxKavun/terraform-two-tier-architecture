@@ -14,7 +14,7 @@ terraform {
 
 provider "aws" {
   region  = var.region
-  profile = "aws-admin"
+  profile = "default"
 }
 
 provider "aws" {
@@ -25,10 +25,14 @@ provider "aws" {
 
 
 module "network" {
-  source               = "./network"
+  source               = "./modules/network"
   vpc_cidr             = var.vpc_cidr
   public_subnet_cidr_a = var.public_subnet_cidr_a
   public_subnet_cidr_b = var.public_subnet_cidr_b
+}
+
+module "session_storage" {
+  source = "./modules/storage"
 }
 
 data "aws_ami" "amz_linux2" {
